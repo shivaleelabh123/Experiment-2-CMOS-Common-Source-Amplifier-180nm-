@@ -1,0 +1,222 @@
+
+## 1️⃣ What is TSMC?
+
+TSMC stands for **Taiwan Semiconductor Manufacturing Company**.
+
+It is the world's largest semiconductor foundry that manufactures CMOS technologies such as:
+
+- 180nm
+- 130nm
+- 65nm
+- 28nm
+- 7nm
+- 5nm etc.
+
+In this experiment, **180nm CMOS technology** refers to the fabrication process where:
+
+Channel length (L) = 180 nm  
+
+Technology parameters like:
+- Threshold voltage (Vth)
+- Mobility (µn, µp)
+- Channel length modulation (λ)
+- Oxide thickness
+
+are defined by the TSMC 180nm Process Design Kit (PDK).
+
+---
+
+## 2️⃣ What is a Library in CMOS Design?
+
+A **library** contains:
+
+- Transistor models (NMOS, PMOS)
+- Device parameters (Vth, mobility, λ)
+- SPICE model files
+- Symbol definitions
+- Standard cell layouts (in digital design)
+
+In LTspice, the 180nm model file is included as:
+
+```
+.include tsmc_180nm_model.lib
+```
+
+This library defines the electrical behavior of the MOSFETs used in simulation.
+
+Without the library:
+- No accurate Vth
+- No realistic gm
+- No proper ro
+- No short-channel effects
+
+So libraries ensure **real fabrication-level accuracy**.
+
+---
+
+## 3️⃣ Why is VDD/2 Often Used as Drain Bias?
+
+In analog amplifier design:
+
+For maximum symmetrical signal swing:
+
+Vout(Q-point) ≈ VDD / 2
+
+Reason:
+
+- If drain voltage is too high → device may enter triode
+- If drain voltage is too low → device may cut off
+- Midpoint bias ensures:
+  - Maximum output swing
+  - Minimum distortion
+  - Equal headroom for positive & negative signals
+
+For VDD = 1.8V:
+
+VDD / 2 = 0.9V
+
+In Circuit A:
+VDS ≈ 0.83V → Close to midpoint → Good biasing
+
+---
+
+## 4️⃣ Why Choose Vov = 0.25V?
+
+Overdrive voltage:
+
+Vov = VGS − Vth
+
+Trade-off considerations:
+
+### If Vov is very small:
+✔ High gain (since gm = 2ID/Vov increases)  
+❌ Poor matching  
+❌ More sensitive to noise  
+❌ Slower speed  
+
+### If Vov is large:
+✔ Better speed  
+✔ Better robustness  
+❌ Lower gain  
+❌ Higher power  
+
+0.25V is chosen because:
+
+- It ensures strong inversion operation
+- Provides reasonable gm
+- Maintains saturation margin
+- Good compromise between gain & speed
+
+---
+
+## 5️⃣ What is Minimum Overdrive Voltage We Can Apply?
+
+Theoretically:
+Vov → very small gives very high gm
+
+Practically in 180nm:
+
+Minimum Vov ≈ 0.15V – 0.2V
+
+If Vov < 0.15V:
+- Device enters weak inversion
+- gm formula changes
+- Current becomes exponential
+- Design becomes unstable
+
+Hence:
+
+Vov = 0.25V ensures strong inversion operation.
+
+---
+
+## 6️⃣ Why gm = 2ID / Vov?
+
+In strong inversion saturation region:
+
+ID = (1/2) µnCox (W/L) Vov²
+
+Differentiating w.r.t VGS:
+
+gm = ∂ID/∂VGS  
+gm = µnCox (W/L) Vov  
+
+But:
+
+ID = (1/2) µnCox (W/L) Vov²  
+
+So,
+
+gm = 2ID / Vov
+
+This formula is valid only in strong inversion saturation.
+
+---
+
+## 7️⃣ Why ro = 1 / (λID)?
+
+Due to channel length modulation:
+
+ID increases slightly with VDS.
+
+Small signal output resistance:
+
+ro = 1 / (λID)
+
+Smaller λ → larger ro → higher gain.
+
+---
+
+## 8️⃣ Why Gain Reduces with Source Degeneration?
+
+With Rs:
+
+Effective transconductance:
+
+gm_eff = gm / (1 + gmRs)
+
+Thus gain reduces because:
+
+Av = -gm(ro) / (1 + gmRs)
+
+So degeneration improves:
+
+✔ Linearity  
+✔ Stability  
+
+But reduces gain.
+
+---
+
+## 9️⃣ Why Circuit B Has Lowest Gain?
+
+Because:
+
+Current source transistor introduces small-signal resistance:
+
+Reff ≈ 1/gm3
+
+This adds extra degeneration.
+
+Hence denominator increases → gain decreases.
+
+---
+
+## 🔟 Why Circuit C Has Highest Gain?
+
+Because:
+
+Diode-connected NMOS:
+
+Rd ≈ 1/gm
+
+Which is smaller than current source degeneration.
+
+Thus:
+
+Less degeneration  
+Higher effective gm  
+Higher voltage gain  
+
+---
+
