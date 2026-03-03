@@ -1,0 +1,298 @@
+# 🧪 Experiment–2  
+# Common Source Amplifier – Three Source Configurations  
+
+**Technology:** 180nm CMOS  
+**Tool Used:** LTspice  
+
+---
+
+## 🔷 Given Specifications (Common for A, B, C)
+
+| Parameter | Value |
+|------------|--------|
+| VDD | 1.8 V |
+| Target Drain Current (ID) | 200 µA |
+| Overdrive Voltage (Vov) | 0.25 V |
+| NMOS Vth | 0.36 V |
+| PMOS Vth | 0.39 V |
+| Channel Length | 180 nm |
+| Power Limit | ≤ 0.5 mW |
+
+---
+
+# 🔴 Circuit A  
+## Common Source Amplifier with Source Resistor (Rs)
+
+---
+
+### 1️⃣ DC Bias Design
+
+**NMOS Gate Voltage**
+
+VGS = Vth + Vov  
+VGS = 0.36 + 0.25  
+VGS = 0.61 V  
+
+Assume source voltage drop:
+
+VRS = 0.2 V  
+
+RS = VRS / ID  
+RS = 0.2 / 200µA  
+RS = 1 kΩ  
+
+Gate bias voltage:
+
+VB1 = VGS + VRS  
+VB1 = 0.61 + 0.2  
+VB1 = 0.81 V  
+
+**PMOS Bias**
+
+VSG = |Vthp| + Vov  
+VSG = 0.39 + 0.25  
+VSG = 0.64 V  
+
+VB2 = VDD – VSG  
+VB2 = 1.8 – 0.64  
+VB2 = 1.16 V  
+
+---
+
+### 2️⃣ Saturation Verification
+
+NMOS:  
+VDS ≈ 0.83 V  
+0.83 > 0.25 ✔  
+
+PMOS:  
+VSD ≈ 0.76 V  
+0.76 > 0.25 ✔  
+
+Both transistors operate in saturation.
+
+---
+
+### 3️⃣ Small Signal Parameters
+
+gm = 2ID / Vov  
+gm = 2 × 200µ / 0.25  
+gm = 1.6 mS  
+
+Assume λ = 0.1 V⁻¹  
+
+ro = 1 / (λID)  
+ro = 1 / (0.1 × 200µ)  
+ro = 50 kΩ  
+
+ro(total) = ro || ro  
+ro(total) = 25 kΩ  
+
+---
+
+### 4️⃣ Theoretical Gain
+
+Av = -gm(ro||ro) / (1 + gmRS)
+
+Numerator:  
+1.6m × 25k = 40  
+
+Denominator:  
+1 + (1.6 × 1k × 10⁻³)  
+= 1 + 1.6  
+= 2.6  
+
+Av ≈ 15.38 V/V  
+
+Gain(dB) = 20 log(15.38)  
+Gain ≈ 23.73 dB  
+
+---
+
+### 5️⃣ Practical Gain (Simulation)
+
+Vin ≈ 20 mV  
+Vout ≈ 240 mV  
+
+Av ≈ 12 V/V  
+Gain ≈ 21.5 dB  
+
+---
+
+### 6️⃣ Power Verification
+
+P = VDD × ID  
+P = 1.8 × 200µ  
+P = 0.36 mW ✔  
+
+---
+
+### 🔎 Observation
+
+• Source degeneration reduces gain  
+• Improved linearity  
+• Stable bias  
+
+---
+
+# 🔵 Circuit B  
+## CS Amplifier with NMOS Current Source
+
+---
+
+### 1️⃣ DC Design
+
+Current source sets ID ≈ 200 µA  
+
+VB1 ≈ 0.61 V  
+VB2 ≈ 1.16 V  
+
+No physical Rs → degeneration due to finite output resistance of current source  
+
+---
+
+### 2️⃣ Saturation Check
+
+Current source NMOS: VDS > Vov ✔  
+Amplifier NMOS: VDS > 0.25 ✔  
+PMOS: VSD > 0.25 ✔  
+
+All devices in saturation.
+
+---
+
+### 3️⃣ Small Signal Insight
+
+Effective degeneration:  
+Reff ≈ 1/gm3  
+
+Voltage gain:
+
+Av = -gm(ro||ro) / (1 + gm/gm3)
+
+If gm3 ≈ gm:  
+Denominator ≈ 2  
+Av ≈ 40 / 2  
+Av ≈ 20 V/V (ideal case)
+
+Practical gain is lower due to non-ideal effects.
+
+---
+
+### 4️⃣ Simulation Results
+
+| Parameter | Value |
+|------------|--------|
+| Gain | 2.45 V/V |
+| Gain (dB) | 7.78 dB |
+| Bandwidth | 42 MHz |
+| Gain Bandwidth Product | 104 MHz |
+
+---
+
+### 🔎 Observation
+
+• Best bias stability  
+• Strong degeneration  
+• Lowest gain  
+
+---
+
+# 🟢 Circuit C  
+## CS Amplifier with Diode-Connected NMOS
+
+---
+
+### 1️⃣ DC Design
+
+Diode NMOS ensures:
+
+VDS = VGS  
+
+Self-biased current control  
+ID ≈ 200 µA  
+
+---
+
+### 2️⃣ Saturation Verification
+
+All devices satisfy VDS > Vov ✔  
+Saturation maintained ✔  
+
+---
+
+### 3️⃣ Small Signal Model
+
+Diode transistor introduces:
+
+Rd ≈ 1/gm  
+
+Less degeneration than Circuit B → Higher gain.
+
+---
+
+### 4️⃣ Theoretical Gain
+
+Av ≈ -gm(ro||ro)  
+Av = 1.6m × 25k  
+Av = 40 V/V  
+
+Gain(dB) = 20 log(40)  
+Gain ≈ 32 dB  
+
+---
+
+### 5️⃣ Simulation Results
+
+| Parameter | Value |
+|------------|--------|
+| Gain | 25.05 V/V |
+| Gain (dB) | 27.97 dB |
+| Bandwidth | 83.21 MHz |
+| Gain Bandwidth Product | 2.08 GHz |
+
+---
+
+### 🔎 Observation
+
+• Highest practical gain  
+• Best bandwidth  
+• Reduced degeneration  
+
+---
+
+# 📊 Final Comparison
+
+| Parameter | Circuit A | Circuit B | Circuit C |
+|------------|------------|------------|------------|
+| Source Element | Rs | Current Source | Diode NMOS |
+| Gain (V/V) | ~12 | 2.45 | 25.05 |
+| Gain (dB) | 21.5 | 7.78 | 27.97 |
+| Bandwidth | Moderate | Moderate | Highest |
+| Power | 0.36 mW | 0.36 mW | 0.36 mW |
+
+---
+
+# 📚 Key Learnings
+
+• Source degeneration reduces voltage gain  
+• Current source improves bias stability  
+• Diode configuration increases gain  
+• Active load increases output resistance  
+• Theoretical ≠ Practical due to:
+  - Channel length modulation  
+  - Parasitic capacitances  
+  - Mobility degradation  
+  - Short channel effects  
+
+---
+
+# 🏁 Final Conclusion
+
+Three Common Source amplifier configurations were designed and simulated in 180nm CMOS.
+
+Circuit A → Balanced performance  
+Circuit B → Best bias stability but lowest gain  
+Circuit C → Highest gain and bandwidth  
+
+Source implementation significantly affects voltage gain and frequency response in CMOS analog design.
